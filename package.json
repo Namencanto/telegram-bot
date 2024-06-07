@@ -1,0 +1,32 @@
+{
+  "name": "telegram_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@noble/secp256k1": "^2.1.0",
+    "dotenv": "^16.4.5",
+    "i18next": "^23.11.5",
+    "i18next-fs-backend": "^2.3.1",
+    "i18next-http-middleware": "^3.6.0",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "qrcode": "^1.5.3",
+    "sequelize": "^6.37.3",
+    "telegraf": "^4.4.0",
+    "telegraf-session-local": "^2.1.1",
+    "tronweb": "^2.3.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.2"
+  }
+}

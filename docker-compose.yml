@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: tg_bot_db
+    environment:
+      POSTGRES_DB: tg_bot_db
+      POSTGRES_USER: tg_bot_user
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - tg_bot_network
+
+volumes:
+  db_data:
+
+networks:
+  tg_bot_network:
+    driver: bridge
