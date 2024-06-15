@@ -17,8 +17,9 @@ db.Users.hasMany(db.Transactions, {
   foreignKey: "user_id",
   sourceKey: "telegram_id",
 });
+db.Stocks.hasMany(db.Keys, { foreignKey: 'stock_id', as: 'Keys' });
 db.Keys.belongsTo(db.Stocks, { foreignKey: 'stock_id' });
-db.Stocks.hasMany(db.Keys, { foreignKey: 'stock_id' });
+
 
 export const User = db.Users;
 export const Deposit = db.Deposits;

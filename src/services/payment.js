@@ -20,7 +20,7 @@ const generateDepositAddress = async (userId, amount) => {
 
     const qrCodeUrl = await generateQRCode(depositAddress);
 
-    await Deposit.create({
+    const deposit = await Deposit.create({
       user_id: userId,
       address: depositAddress,
       amount,
@@ -28,7 +28,7 @@ const generateDepositAddress = async (userId, amount) => {
       expires_at: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes from now
     });
 
-    return qrCodeUrl;
+    return {qrCodeUrl, depositAddress, depositId: deposit.id};
   } catch (error) {
     log('Error generating deposit address:', error);
     throw error;

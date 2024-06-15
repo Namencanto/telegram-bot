@@ -1,4 +1,3 @@
-import bot from "../index.js";
 import stockService from "../services/stock.js";
 import fetch from "node-fetch";
 import log from "../utils/logger.js";
@@ -12,7 +11,7 @@ const parseKeys = (text, fileType) => {
 
   keys.forEach((key) => {
     const parts = key.split("|");
-    if (parts.length < 3 || parts.length > 6) {
+    if (parts.length < 3) {
       throw new Error("Invalid key format");
     }
   });
@@ -20,7 +19,7 @@ const parseKeys = (text, fileType) => {
   return keys;
 };
 const adminController = {
-  addStock: async (ctx) => {
+  addStock: async (ctx, bot, country) => {
     try {
       if (!ctx.state.isAdmin) {
         log(`Unauthorized admin access attempt by: ${ctx.from.id}`);
@@ -44,7 +43,7 @@ const adminController = {
           }
 
           const keys = parseKeys(keysText, fileType);
-          await stockService.addKeys(keys);
+          await stockService.addKeys(keys, country);
           ctx.reply(ctx.i18n.t("stock_updated"));
         } catch (error) {
           log.error(`Error processing file for user ${ctx.from.id}:`, error);

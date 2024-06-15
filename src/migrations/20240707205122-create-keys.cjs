@@ -21,15 +21,11 @@ module.exports = {
         type: Sequelize.STRING(4),
         allowNull: false,
       },
-      otherinfo1: {
-        type: Sequelize.TEXT,
-        allowNull: true,
+      code: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
-      otherinfo2: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      otherinfo3: {
+      otherinfo: {
         type: Sequelize.TEXT,
         allowNull: true,
       },

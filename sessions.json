@@ -1,0 +1,34 @@
+{
+  "sessions": [
+    {
+      "id": "1633333268:1633333268",
+      "data": {
+        "customQuantity": {
+          "type": "country",
+          "country": "USA"
+        }
+      }
+    },
+    {
+      "id": "5505399865:5505399865",
+      "data": {
+        "customQuantity": {
+          "type": "country",
+          "country": "USA"
+        }
+      }
+    },
+    {
+      "id": "6203496685:6203496685",
+      "data": {
+        "customQuantity": {
+          "type": "country",
+          "country": "USA"
+        },
+        "countrySelection": false,
+        "prefixMode": false,
+        "awaitingDepositAmount": true
+      }
+    }
+  ]
+}

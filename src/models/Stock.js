@@ -11,8 +11,16 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      price: {
+      normal_price: {
         type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      bulk_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      bulk_threshold: {
+        type: DataTypes.BIGINT,
         allowNull: false,
       },
       createdAt: {

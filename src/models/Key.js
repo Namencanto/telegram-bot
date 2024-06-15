@@ -18,15 +18,11 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING(4),
         allowNull: false,
       },
-      otherinfo1: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+      code: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
-      otherinfo2: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      otherinfo3: {
+      otherinfo: {
         type: DataTypes.TEXT,
         allowNull: true,
       },

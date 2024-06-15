@@ -12,8 +12,16 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      price: {
+      normal_price: {
         type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      bulk_price: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      bulk_threshold: {
+        type: Sequelize.BIGINT,
         allowNull: false,
       },
       createdAt: {
