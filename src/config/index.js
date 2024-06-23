@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Sequelize, DataTypes } from 'sequelize';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -18,6 +18,12 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: 'postgres',
     logging: false, // Set to console.log to see SQL queries
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // Set to true if you want to enforce strict SSL validation
+      }
+    }
   }
 );
 
@@ -28,7 +34,8 @@ const loadModels = async () => {
   const files = fs.readdirSync(modelsDir).filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js');
 
   for (const file of files) {
-    const module = await import(path.join(modelsDir, file));
+    const filePath = path.join(modelsDir, file);
+    const module = await import(pathToFileURL(filePath).href);
     const model = module.default(sequelize, DataTypes);
     db[model.name] = model;
   }
