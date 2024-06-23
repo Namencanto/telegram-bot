@@ -14,11 +14,23 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
     address: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
+      type: DataTypes.STRING(1024),
+      allowNull: true,
     },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    payment_id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    pay_currency: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+    },
+    pay_amount: {
+      type: DataTypes.DECIMAL(12, 8),
       allowNull: false,
     },
     confirmed: {
@@ -28,6 +40,10 @@ export default (sequelize, DataTypes) => {
     expires_at: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    full_details: {
+      type: DataTypes.JSON,
+      allowNull: true,
     },
     createdAt: {
       allowNull: false,

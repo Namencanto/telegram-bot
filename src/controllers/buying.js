@@ -98,7 +98,13 @@ const buyingController = {
 
     try {
       const { country } = ctx.session.customQuantity;
-      const quantity = parseInt(ctx.message.text, 10);
+      const [_,, qty] = ctx.match[0].split("_");
+      if (qty === "custom") {
+        ctx.session.customQuantity = { type: "country", country: country };
+        return ctx.reply(ctx.i18n.t("custom_quantity", { country: country }));
+      }
+      const quantity = parseInt(qty, 10);
+
 
       if (isNaN(quantity) || quantity <= 0) {
         return ctx.reply(ctx.i18n.t("invalid_quantity"));
@@ -116,12 +122,7 @@ const buyingController = {
   },
   processCountryPurchase: async (ctx, country, quantity) => {
     try {
-      let user = await User.findOne({ where: { telegram_id: ctx.from.id } });
-      if (!user) {
-        user = await User.create({ telegram_id: ctx.from.id });
-        log(`Created new user with telegram ID ${ctx.from.id}.`);
-      }
-
+      const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
       const stock = await Stock.findOne({ where: { country } });
       if (!stock) {
         log(`Stock not found for country ${country}.`);
@@ -140,7 +141,6 @@ const buyingController = {
         );
         return ctx.reply(ctx.i18n.t("insufficient_balance"));
       }
-
       const keys = await stockService.buyKeys(user, country, quantity);
       if (!keys) {
         log(

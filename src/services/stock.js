@@ -21,24 +21,20 @@ const stockService = {
   },
   getKeys: async (country, quantity) => {
     log(`Checking availability of ${quantity} keys for country ${country}.`);
-    const stocks = await Stock.findAll({
-      where: { country },
+    const availableKeys = await Key.findAll({
       include: [{
-        model: Key,
-        as: 'Keys',
-        where: { used: false },
-        required: true
+        model: Stock,
+        as: 'Stock',
+        where: { country }
       }],
+      where: { used: false },
       limit: quantity,
     });
-  
-    const availableKeys = stocks.flatMap(stock => stock.Keys);
   
     if (availableKeys.length < quantity) {
       log(`Not enough keys available for country ${country}. Requested: ${quantity}, Available: ${availableKeys.length}`);
       return null; // No available keys found
     }
-  
     // Update keys as used
     const keyIds = availableKeys.map(key => key.id);
     await Key.update({ used: true }, { where: { id: keyIds } });
@@ -61,7 +57,6 @@ const stockService = {
     }
   
     log(`Successfully marked ${quantity} keys as used for user with ID ${user.id}.`);
-  
     return keys.map(key => `${key.number}|${key.mm}|${key.yyyy}|${key.code}|${key.otherinfo || ''}`.replace(/\|+$/, ''));
   },
   getBulkKeys: async (quantity) => {

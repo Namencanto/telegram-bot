@@ -14,6 +14,12 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       defaultValue: 0,
     },
+    lang: {
+      type: DataTypes.ENUM,
+      values: ['en', 'ru', 'zh'],
+      allowNull: false,
+      defaultValue: 'en'
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -29,5 +35,4 @@ export default (sequelize, DataTypes) => {
   });
 
   return Users;
-  };
-  
+};

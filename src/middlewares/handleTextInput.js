@@ -1,10 +1,10 @@
-import moment from 'moment';
-import { Deposit, Key, User } from '../config/models.js';
+import { Key, User } from '../config/models.js';
 import buyingController from '../controllers/buying.js';
 import userController from '../controllers/user.js';
+import depositService from '../services/deposit.js';
 import handlePrefixMode from '../services/modes.js';
-import { generateDepositAddress } from '../services/payment.js';
-import { sendKeysDocument } from '../utils/helpers.js';
+import generateQRCode from '../services/qrCode.js';
+import { sendDepositDetails, sendKeysDocument } from '../utils/helpers.js';
 import log from '../utils/logger.js';
 
 const handleTextInput = async (ctx, bot) => {
@@ -14,7 +14,17 @@ const handleTextInput = async (ctx, bot) => {
     const commandHandlers = {
       'buy_country': buyingController.buyCountry,
       'query_stock': userController.queryStock,
-      'deposit_funds': (ctx) => userController.depositFunds(ctx, bot),
+      'deposit_funds': async (ctx) => {
+        let ongoingDeposit = await depositService.checkOngoingDeposit(ctx.from.id);
+
+        if (ongoingDeposit) {
+          const qrCodeUrl = await generateQRCode(ongoingDeposit.address);
+          ongoingDeposit.qrCodeUrl = qrCodeUrl;
+          return await sendDepositDetails(ctx, ongoingDeposit, true)
+        }
+        ctx.session.awaitingDepositAmount = true;
+        return ctx.reply(ctx.i18n.t('enter_amount'));
+      },
       'account_info': userController.accountInfo,
     };
   
@@ -37,42 +47,27 @@ const handleTextInput = async (ctx, bot) => {
   
 // Handle deposit amount input
 if (ctx.session.awaitingDepositAmount) {
-    ctx.session.awaitingDepositAmount = false;
-    const amount = parseFloat(text);
-    if (isNaN(amount) || amount <= 0) {
-      return ctx.reply(ctx.i18n.t('invalid_amount'));
-    }
-
-    try {
-      const {qrCodeUrl, depositAddress, depositId} = await generateDepositAddress(ctx.from.id, amount);
-      const base64Data = qrCodeUrl.replace(/^data:image\/png;base64,/, "");
-      const qrCodeBuffer = Buffer.from(base64Data, 'base64');
-
-      const depositDetails = `
-      ${ctx.i18n.t('deposit_caption', { amount })}
-      \n${ctx.i18n.t('actual_payment_amount', { amount })}
-      \n${ctx.i18n.t('payment_address', { address: depositAddress })}
-      \n\n⚠️${ctx.i18n.t('transfer_warning')}
-      \n⚠️${ctx.i18n.t('payment_timeout')}
-      `;
-
-      await ctx.replyWithPhoto(
-        { source: qrCodeBuffer },
-        {
-          caption: depositDetails,
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: ctx.i18n.t('cancel_deposit'), callback_data: `cancel_deposit_${depositId}` }],
-            ],
-          },
-        }
-      );
-    } catch (error) {
-      log.error(`Error generating deposit address for user ${ctx.from.id}:`, error);
-      return ctx.reply(ctx.i18n.t('error_occurred'));
-    }
-    return;
+  ctx.session.awaitingDepositAmount = false;
+  const amount = parseFloat(text);
+  if (isNaN(amount) || amount <= 0) {
+    return ctx.reply(ctx.i18n.t('invalid_amount'));
   }
+
+  ctx.session.depositAmount = amount;
+
+  return ctx.reply(ctx.i18n.t('choose_currency'), {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: 'USDT (ERC20)', callback_data: 'currency_usdterc20' }],
+        [{ text: 'USDT (SOL)', callback_data: 'currency_usdtsol' }],
+        [{ text: 'BTC', callback_data: 'currency_btc' }],
+        [{ text: 'ETH', callback_data: 'currency_eth' }],
+        [{ text: 'SOL', callback_data: 'currency_sol' }],
+        [{ text: 'LTC', callback_data: 'currency_ltc' }]
+      ],
+    },
+  });
+}
 
     // Prefix mode logic
   if (ctx.session && ctx.session.prefixMode && ctx.session.prefixMode.active) {
@@ -112,12 +107,14 @@ if (ctx.session.awaitingDepositAmount) {
   } else if (ctx.session && ctx.session.countrySelection) {
     const country = ctx.session.countrySelection.country;
     const input = ctx.message.text.trim();
-
+    console.log(ctx)
     if (/^\d{6}$/.test(input)) {
       await handlePrefixMode(ctx, country, input);
     } else {
       const quantity = parseInt(input, 10);
-      if (isNaN(quantity) || quantity <= 0) {
+      console.log(quantity)
+    console.log(ctx)
+    if (isNaN(quantity) || quantity <= 0) {
         ctx.reply(ctx.i18n.t('invalid_quantity'));
         ctx.session.countrySelection = { country }; // Retain the country selection state
       } else {

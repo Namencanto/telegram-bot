@@ -6,7 +6,11 @@
         "customQuantity": {
           "type": "country",
           "country": "USA"
-        }
+        },
+        "prefixMode": false,
+        "countrySelection": false,
+        "awaitingDepositAmount": false,
+        "depositAmount": 20
       }
     },
     {
@@ -27,7 +31,64 @@
         },
         "countrySelection": false,
         "prefixMode": false,
-        "awaitingDepositAmount": true
+        "awaitingDepositAmount": false,
+        "depositAmount": 23
+      }
+    },
+    {
+      "id": "6172455963:6172455963",
+      "data": {
+        "prefixMode": false,
+        "countrySelection": false,
+        "awaitingDepositAmount": false,
+        "depositAmount": 100
+      }
+    },
+    {
+      "id": "1350557671:1350557671",
+      "data": {
+        "prefixMode": false,
+        "countrySelection": false,
+        "awaitingDepositAmount": false
+      }
+    },
+    {
+      "id": "1958370872:1958370872",
+      "data": {
+        "prefixMode": null,
+        "countrySelection": {
+          "country": "USA"
+        },
+        "awaitingDepositAmount": false,
+        "depositAmount": 35
+      }
+    },
+    {
+      "id": "6323257283:6323257283",
+      "data": {
+        "prefixMode": false,
+        "countrySelection": false,
+        "awaitingDepositAmount": false
+      }
+    },
+    {
+      "id": "6124544672:6124544672",
+      "data": {
+        "prefixMode": null,
+        "countrySelection": {
+          "country": "UK"
+        },
+        "awaitingDepositAmount": false,
+        "depositAmount": 200
+      }
+    },
+    {
+      "id": "6652341637:6652341637",
+      "data": {
+        "prefixMode": false,
+        "countrySelection": false,
+        "awaitingDepositAmount": false,
+        "depositAmount": 10
       }
     }
   ]

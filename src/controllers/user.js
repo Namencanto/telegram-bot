@@ -1,6 +1,7 @@
 import { Deposit, Transaction, User } from '../config/models.js';
 import log from '../utils/logger.js';
 import stockService from '../services/stock.js';
+import userService from '../services/user.js';
 
 const userController = {
   start: async (ctx) => {
@@ -10,8 +11,10 @@ const userController = {
       ctx.session.awaitingDepositAmount = false;
       
     const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
+
+    // create new user
     if (!user) {
-      await User.create({ telegram_id: ctx.from.id });
+      await userService.createUser(ctx);
     }
 
     const currentLang = ctx.i18n.language || 'en';
@@ -54,22 +57,11 @@ const userController = {
   },
   accountInfo: async (ctx) => {
     try {
-      let user = await User.findOne({ where: { telegram_id: ctx.from.id } });
-    if (!user) {
-      user = await User.create({ telegram_id: ctx.from.id });
-      return ctx.reply(ctx.i18n.t('account_details', {
-        id: user.telegram_id,
-        username: ctx.from.username || 'N/A',
-        registrationDate: user.createdAt.toLocaleString(),
-        totalPurchaseQuantity: 0,
-        totalPurchaseAmount: '0.00',
-        balance: '0.00',
-      }));
-    }
+      const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
 
-    const transactionsCount = await Transaction.count({ where: { user_id: user.telegram_id, type: 'purchase' } });
-    const totalPurchaseAmount = await Transaction.sum('amount', { where: { user_id: user.telegram_id, type: 'purchase' } }) || 0;
-    ctx.reply(ctx.i18n.t('account_details', {
+      const transactionsCount = await Transaction.count({ where: { user_id: user.telegram_id, type: 'purchase' } });
+      const totalPurchaseAmount = await Transaction.sum('amount', { where: { user_id: user.telegram_id, type: 'purchase' } }) || 0;
+      ctx.reply(ctx.i18n.t('account_details', {
       id: user.telegram_id,
       username: `${ctx.from?.first_name} ${ctx.from?.last_name}`,
       registrationDate: user.createdAt.toLocaleString(),
@@ -99,19 +91,6 @@ const userController = {
       ctx.reply(stockMessage);
     } catch (error) {
       log(`Error fetching stock for user ${userId}:`, error);
-      ctx.reply(ctx.i18n.t('error_occurred'));
-    }
-  },
-  depositFunds: async (ctx) => {
-    try {
-      const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
-      if (!user) {
-        await User.create({ telegram_id: ctx.from.id });
-      }
-      ctx.reply(ctx.i18n.t('enter_amount'));
-      ctx.session.awaitingDepositAmount = true;
-    } catch (error) {
-      log.error(`Error in depositFunds for user ${ctx.from.id}:`, error);
       ctx.reply(ctx.i18n.t('error_occurred'));
     }
   },
