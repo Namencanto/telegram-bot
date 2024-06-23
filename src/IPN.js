@@ -17,6 +17,7 @@ const verifyApiKey = (req, res, next) => {
 };
 app.all('/payment-notification', (req, res, next) => {
   console.log(`Request method: ${req.method}`);
+  console.log(`Request method: ${req.body}`);
   next();
 });
 // app.all('/payment-notification', verifyApiKey, async (req, res) => {
