@@ -5,15 +5,15 @@ This bot is designed to facilitate the sale of keys via Telegram. It provides a 
 
 ## Requirements
 
-- Node.js version 16.x
+- Node.js version 20.x
 - NPM (Node Package Manager)
 
 ## Installation
 
-1. Set Node.js to version 16:
+1. Set Node.js to version 20:
    ```bash
-   nvm install 16
-   nvm use 16
+   nvm install 20
+   nvm use 20
    ```
 
 2. Install required dependencies:
@@ -49,3 +49,7 @@ If you encounter any issues during the installation or running of the bot, check
 - Are all dependencies installed correctly?
 - Does the `.env` file contain all the necessary environment variables?
 - Did the database migrations run without errors?
+
+## Live Bot
+
+You can interact with the live bot here: [Key Selling Bot](https://t.me/key_selling_bot)
