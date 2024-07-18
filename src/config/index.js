@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-import { Sequelize, DataTypes } from 'sequelize';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+import fs from "fs";
+import path from "path";
+import { Sequelize, DataTypes } from "sequelize";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -16,16 +16,23 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'postgres',
+    dialect: "postgres",
     logging: false, // Set to console.log to see SQL queries
+    dialectOptions: {
+      ssl: {
+        require: false,
+      },
+    },
   }
 );
 
 const db = {};
-const modelsDir = path.join(__dirname, '../models');
+const modelsDir = path.join(__dirname, "../models");
 
 const loadModels = async () => {
-  const files = fs.readdirSync(modelsDir).filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js');
+  const files = fs
+    .readdirSync(modelsDir)
+    .filter((file) => file.indexOf(".") !== 0 && file.slice(-3) === ".js");
 
   for (const file of files) {
     const module = await import(path.join(modelsDir, file));
@@ -33,8 +40,8 @@ const loadModels = async () => {
     db[model.name] = model;
   }
 
-  Object.keys(db).forEach(modelName => {
-    if ('associate' in db[modelName]) {
+  Object.keys(db).forEach((modelName) => {
+    if ("associate" in db[modelName]) {
       db[modelName].associate(db);
     }
   });
