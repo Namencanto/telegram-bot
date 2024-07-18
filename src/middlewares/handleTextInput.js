@@ -16,7 +16,6 @@ const handleTextInput = async (ctx, bot) => {
       return ctx.reply(ctx.i18n.t('too_many_requests'));
   }
 
-  // Set delay in progress
   ctx.session.delayInProgress = true;
 
   // Delay for 1 second
@@ -27,7 +26,7 @@ const handleTextInput = async (ctx, bot) => {
 
       // Check if the user is in broadcast mode
   if (ctx.session.broadcasting) {
-    ctx.session.broadcasting = false; // Reset the session state
+    ctx.session.broadcasting = false;
     return adminController.broadcastMessage(ctx, bot);
   }
 
@@ -141,7 +140,7 @@ if (ctx.session.awaitingDepositAmount) {
     console.log(ctx)
     if (isNaN(quantity) || quantity <= 0) {
         ctx.reply(ctx.i18n.t('invalid_quantity'));
-        ctx.session.countrySelection = { country }; // Retain the country selection state
+        ctx.session.countrySelection = { country };
       } else {
         await buyingController.processCountryPurchase(ctx, country, quantity);
       }

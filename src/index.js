@@ -74,7 +74,7 @@ const setupBotCommands = (bot) => {
     ctx.reply(ctx.i18n.t("provide_message_to_broadcast"));
   });
   bot.on('text', (ctx) => handleTextInput(ctx, bot));
-  bot.on('photo', (ctx) => handleTextInput(ctx, bot));  // Add this line to handle photo input
+  bot.on('photo', (ctx) => handleTextInput(ctx, bot));
 
 };
 
