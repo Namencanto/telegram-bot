@@ -4,7 +4,6 @@ import { Op } from 'sequelize';
 import log from '../utils/logger.js';
 import nowPaymentsApi from '../config/nowPaymentsApi.js';
 import i18n from '../config/i18n.js';
-import { checkPaymentDifference } from '../utils/helpers.js';
 
 export const checkDeposits = async (bot) => {
   log('Checking deposits...');
@@ -27,12 +26,15 @@ export const checkDeposits = async (bot) => {
         const user = await User.findOne({ where: { telegram_id: deposit.user_id } });
         const userLang = user.lang;
         const lang = i18n.cloneInstance({ lng: userLang });
-
+        console.log(paymentDetails.actually_paid)
+        console.log(paymentDetails)
         if (paymentDetails.payment_status === 'finished') {
           await db.sequelize.transaction(async (t) => {
             await deposit.update({ confirmed: true }, { transaction: t });
-            checkPaymentDifference(paymentDetails, deposit);
-            await user.update({ balance: +user.balance + +paymentDetails.outcome_amount }, { transaction: t });
+
+            if (paymentDetails.actually_paid >= paymentDetails.pay_amount) {
+              await user.update({ balance: +user.balance + +paymentDetails.price_amount * 0.97 }, { transaction: t });
+            }
           });
 
           log(`Deposit ${deposit.id} confirmed for user ${deposit.user_id}.`);

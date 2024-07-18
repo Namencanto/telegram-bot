@@ -11,18 +11,21 @@ import log from './utils/logger.js';
 import i18n from './config/i18n.js';
 import handleTextInput from './middlewares/handleTextInput.js';
 import { setupCronJobs } from './jobs/index.js';
-import IPN from './IPN.js'
-import express from 'express';
+import { checkRequiredEnvs } from '../requiredEnvs.js';
+
+try {
+  checkRequiredEnvs();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1); // Exit the process with an error code
+}
 
 const botToken = process.env.BOT_TOKEN;
 export const bot = new Telegraf(botToken);
 
 const localSession = new TelegrafSessionLocal();
+
 bot.use(localSession.middleware());
-
-const app = express();
-
-app.use(express.json());
 
 const setupAdminMiddleware = (bot, adminIds) => {
   bot.use((ctx, next) => {
@@ -34,10 +37,9 @@ const setupAdminMiddleware = (bot, adminIds) => {
   });
 };
 
-// todo fix the logic of changing languages, it works when the language is set by default, but after changing the buttons do not work
 const setupLanguageMiddleware = (bot) => {
   bot.use(async (ctx, next) => {
-    const lang = ctx?.i18n?.language || ctx.from.language_code || 'en';
+    const lang = ctx.session?.language || ctx?.i18n?.language || ctx.from.language_code || 'en';
     ctx.i18n = i18n.cloneInstance();
     ctx.i18n.changeLanguage(lang);
     await next();
@@ -47,6 +49,7 @@ const setupLanguageMiddleware = (bot) => {
 const setupBotCommands = (bot) => {
   bot.start((ctx) => userController.start(ctx));
   bot.action(/country_.*/, (ctx) => buyingController.selectCountry(ctx, bot));
+  bot.action(/six_digit_list_.*/, (ctx) => buyingController.generateSixDigitList(ctx));
   bot.action(/quantity_.*/, (ctx) => buyingController.selectCountryQuantity(ctx));
   bot.action(/custom_.*/, (ctx) => buyingController.handleCustomCountryQuantity(ctx));
   bot.action(/cancel_deposit_.*/, (ctx) => userController.cancelDeposit(ctx));
@@ -66,8 +69,13 @@ const setupBotCommands = (bot) => {
     }
   });
   bot.command('addstock', (ctx) => adminController.addStock(ctx));
-
+  bot.command('broadcast', (ctx) => {
+    ctx.session.broadcasting = true;
+    ctx.reply(ctx.i18n.t("provide_message_to_broadcast"));
+  });
   bot.on('text', (ctx) => handleTextInput(ctx, bot));
+  bot.on('photo', (ctx) => handleTextInput(ctx, bot));  // Add this line to handle photo input
+
 };
 
 const startApp = async () => {
@@ -84,12 +92,8 @@ const startApp = async () => {
 
     setupCronJobs(bot);
     
-    app.use(IPN);
-
     log('Bot is running...');
     await bot.launch();
-
-
   } catch (err) {
     log.error('Bot launch error', err);
   }

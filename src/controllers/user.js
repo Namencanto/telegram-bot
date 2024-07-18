@@ -41,10 +41,8 @@ const userController = {
       reply_markup: {
         keyboard: [
           [languageButtons[0], languageButtons[1]],
-          [{ text: ctx.i18n.t('buy_country') }],
-          [{ text: ctx.i18n.t('query_stock') }],
-          [{ text: ctx.i18n.t('deposit_funds') }],
-          [{ text: ctx.i18n.t('account_info') }],
+          [{ text: ctx.i18n.t('buy_country') }, { text: ctx.i18n.t('query_stock') }],
+          [{ text: ctx.i18n.t('deposit_funds') }, { text: ctx.i18n.t('account_info') }],
         ],
         resize_keyboard: true,
         one_time_keyboard: false,

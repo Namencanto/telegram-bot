@@ -7,10 +7,41 @@
           "type": "country",
           "country": "USA"
         },
-        "prefixMode": false,
-        "countrySelection": false,
+        "prefixMode": {
+          "active": true,
+          "country": "CA",
+          "prefix": "100347",
+          "availableKeys": [
+            {
+              "id": "87419279-d2ea-4417-acc5-8e908f8fa88b",
+              "number": "100347892033",
+              "mm": "03",
+              "yyyy": "28",
+              "code": "3202",
+              "otherinfo": null,
+              "used": false,
+              "stock_id": "2347fe49-fb6b-4458-b814-755cec1f2317",
+              "createdAt": "2024-06-16T22:42:35.430Z",
+              "updatedAt": "2024-06-16T22:42:35.430Z"
+            }
+          ],
+          "stock": {
+            "id": "2347fe49-fb6b-4458-b814-755cec1f2317",
+            "country": "CA",
+            "normal_price": "5.00",
+            "bulk_price": "4.50",
+            "bulk_threshold": "50",
+            "createdAt": "2024-06-15T11:24:42.641Z",
+            "updatedAt": "2024-06-15T11:24:42.641Z"
+          }
+        },
+        "countrySelection": {
+          "country": "CA"
+        },
         "awaitingDepositAmount": false,
-        "depositAmount": 20
+        "depositAmount": 423608,
+        "broadcasting": false,
+        "delayInProgress": false
       }
     },
     {
@@ -32,7 +63,10 @@
         "countrySelection": false,
         "prefixMode": false,
         "awaitingDepositAmount": false,
-        "depositAmount": 23
+        "depositAmount": 10,
+        "language": "en",
+        "broadcasting": false,
+        "delayInProgress": false
       }
     },
     {
@@ -55,19 +89,20 @@
     {
       "id": "1958370872:1958370872",
       "data": {
-        "prefixMode": null,
-        "countrySelection": {
-          "country": "USA"
-        },
+        "prefixMode": false,
+        "countrySelection": false,
         "awaitingDepositAmount": false,
-        "depositAmount": 35
+        "depositAmount": 35,
+        "language": "en"
       }
     },
     {
       "id": "6323257283:6323257283",
       "data": {
-        "prefixMode": false,
-        "countrySelection": false,
+        "prefixMode": null,
+        "countrySelection": {
+          "country": "USA"
+        },
         "awaitingDepositAmount": false
       }
     },
@@ -88,7 +123,8 @@
         "prefixMode": false,
         "countrySelection": false,
         "awaitingDepositAmount": false,
-        "depositAmount": 10
+        "depositAmount": 10,
+        "language": "zh"
       }
     }
   ]

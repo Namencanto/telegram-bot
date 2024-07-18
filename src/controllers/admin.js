@@ -1,6 +1,8 @@
 import stockService from "../services/stock.js";
 import fetch from "node-fetch";
 import log from "../utils/logger.js";
+import { User } from "../config/models.js";
+import { Op } from "sequelize";
 
 const parseKeys = (text, fileType) => {
   const delimiter = fileType === "csv" ? "," : "\n";
@@ -52,6 +54,51 @@ const adminController = {
       });
     } catch (error) {
       log.error("Error adding stock:", error);
+      ctx.reply(ctx.i18n.t("error_occurred"));
+    }
+  },
+
+  broadcastMessage: async (ctx, bot) => {
+    try {
+      if (!ctx.state.isAdmin) {
+        log(`Unauthorized admin access attempt by: ${ctx.from.id}`);
+        return ctx.reply(ctx.i18n.t("not_authorized"));
+      }
+      console.log(ctx.message.photo)
+      let messageToSend = ctx.message.text ? ctx.message.text.replace('/broadcast', '').trim() : null;
+      const photoToSend = ctx.message.photo ? ctx.message.photo[ctx.message.photo.length - 1].file_id : null;
+
+      if (!messageToSend && !photoToSend) {
+        return ctx.reply(ctx.i18n.t("provide_message_to_broadcast"));
+      }
+
+      const users = await User.findAll({
+        where: {
+          telegram_id: {
+            [Op.in]: process.env.ADMIN_TELEGRAM_IDS.split(',').map(id => id.trim())
+          }
+        }
+      });
+
+      for (const user of users) {
+        try {
+          if (photoToSend) {
+            console.log(messageToSend)
+            await bot.telegram.sendPhoto(user.telegram_id, photoToSend, {
+              caption: messageToSend,
+              parse_mode: 'Markdown'
+            });
+          } else {
+            await bot.telegram.sendMessage(user.telegram_id, messageToSend, { parse_mode: 'Markdown' });
+          }
+        } catch (error) {
+          log.error(`Failed to send message to ${user.telegram_id}:`, error);
+        }
+      }
+
+      ctx.reply(ctx.i18n.t("message_broadcasted"));
+    } catch (error) {
+      log.error("Error broadcasting message:", error);
       ctx.reply(ctx.i18n.t("error_occurred"));
     }
   },

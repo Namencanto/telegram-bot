@@ -1,17 +1,9 @@
-import TronWeb from 'tronweb';
 import { User, Deposit } from '../config/models.js';
 import db from '../config/index.js';
 import { Op } from 'sequelize';
 import generateQRCode from './qrCode.js';
 import bot from '../index.js';
 import log from '../utils/logger.js';
-
-const tronWeb = new TronWeb({
-  fullHost: process.env.TRON_URL,
-  privateKey: process.env.TRON_PRIVATE_KEY,
-});
-
-const usdtContractAddress = 'TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj'; // USDT contract address on testnet
 
 const generateDepositAddress = async (userId, amount) => {
   try {

@@ -1,14 +1,35 @@
 import { Key, User } from '../config/models.js';
+import adminController from '../controllers/admin.js';
 import buyingController from '../controllers/buying.js';
 import userController from '../controllers/user.js';
 import depositService from '../services/deposit.js';
-import handlePrefixMode from '../services/modes.js';
+import { handlePrefixMode } from '../services/modes.js';
 import generateQRCode from '../services/qrCode.js';
 import { sendDepositDetails, sendKeysDocument } from '../utils/helpers.js';
 import log from '../utils/logger.js';
 
 const handleTextInput = async (ctx, bot) => {
     const text = ctx.message.text;
+
+    // Check if a delay is already in progress
+    if (ctx.session.delayInProgress) {
+      return ctx.reply(ctx.i18n.t('too_many_requests'));
+  }
+
+  // Set delay in progress
+  ctx.session.delayInProgress = true;
+
+  // Delay for 1 second
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // Reset delay in progress
+  ctx.session.delayInProgress = false;
+
+      // Check if the user is in broadcast mode
+  if (ctx.session.broadcasting) {
+    ctx.session.broadcasting = false; // Reset the session state
+    return adminController.broadcastMessage(ctx, bot);
+  }
 
     // Check if the text matches any of the commands
     const commandHandlers = {
@@ -36,11 +57,14 @@ const handleTextInput = async (ctx, bot) => {
      // Check if the text matches any language change
   if (text === ctx.i18n.t('set_lang_en')) {
     ctx.i18n.changeLanguage('en');
+    ctx.session.language = 'en';
     await userController.start(ctx);
   } else if (text === ctx.i18n.t('set_lang_ru')) {
+    ctx.session.language = 'ru';
     ctx.i18n.changeLanguage('ru');
     await userController.start(ctx);
   } else if (text === ctx.i18n.t('set_lang_zh')) {
+    ctx.session.language = 'zh';
     ctx.i18n.changeLanguage('zh');
     await userController.start(ctx);
   }
@@ -87,8 +111,9 @@ if (ctx.session.awaitingDepositAmount) {
     if (!user) {
       return ctx.reply(ctx.i18n.t("error_occurred"));
     }
+    const specialPriceMultiplier = process.env.SPECIAL_PRICE_MULTIPLIER;
 
-    const specialPrice = parseFloat(stock.normal_price) * 1.35;
+    const specialPrice = parseFloat(stock.normal_price) * +specialPriceMultiplier;
     const totalPrice = specialPrice * quantity;
 
     if (user.balance < totalPrice) {

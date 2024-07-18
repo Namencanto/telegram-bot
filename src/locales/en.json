@@ -1,10 +1,10 @@
 {
   "welcome": "Welcome! Choose an option:",
-  "buy_country": "Purchase by Countries",
+  "buy_country": "🗺️ Purchase by Countries",
   "buy_bulk": "Purchase in Bulk",
-  "query_stock": "Query Stock",
-  "deposit_funds": "Deposit Funds",
-  "account_info": "Account info",
+  "query_stock": "📊 Query Stock",
+  "deposit_funds": "💰 Deposit Funds",
+  "account_info": "📜 Account info",
   "account_details": "Your ID: {{id}}\nUsername: {{username}}\nRegistration date: {{registrationDate}}\n\nTotal purchase quantity: {{totalPurchaseQuantity}}\n\nTotal purchase amount: {{totalPurchaseAmount}} USD\n\nBalance: {{balance}} USD",
   "not_authorized": "You are not authorized to perform this action.",
   "choose_country": "Choose a country:",
@@ -49,6 +49,13 @@
   "invalid_amount": "Invalid amount entered. Please enter a valid amount.",
   "amount_minimal_error": "The amount is too low. The minimum amount is ${{minAmount}}. Please enter a higher amount.",
   "enter_amount_again": "Please enter the amount to deposit again:",
-  "choose_currency": "Choose a currency:"
+  "choose_currency": "Choose a currency:",
+  "country_not_selected": "Country not selected.",
+  "stock_not_found": "Stock not found for country {{country}}.",
+  "six_digit_list_title": "6 digit, quantity for country {{country}}",
+  "six_digit_list": "6 digit list",
+  "provide_message_to_broadcast": "Please provide a message to broadcast.",
+  "message_broadcasted": "Message broadcasted to all users.",
+  "too_many_requests": "Too many requests, please wait a moment before trying again."
 }
 

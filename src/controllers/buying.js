@@ -2,6 +2,7 @@ import { User, Stock, Key, Transaction } from "../config/models.js";
 import stockService from "../services/stock.js";
 import log from "../utils/logger.js";
 import { predefinedButtons, sendKeysDocument } from "../utils/helpers.js";
+import { Parser } from 'json2csv';
 
 const buyingController = {
   buyCountry: async (ctx) => {
@@ -59,7 +60,10 @@ const buyingController = {
     
         ctx.reply(responseMessage, {
           reply_markup: {
-            inline_keyboard: predefinedButtons(`quantity_${country}`),
+            inline_keyboard: [
+              ...predefinedButtons(`quantity_${country}`),
+              [{ text: ctx.i18n.t('six_digit_list'), callback_data: `six_digit_list_${country}` }]
+            ],
           },
         });
     
@@ -175,6 +179,68 @@ const buyingController = {
       ctx.reply(ctx.i18n.t("error_occurred"));
     }
   },
+  generateSixDigitList: async (ctx) => {
+    try {
+      const { country } = ctx.session.countrySelection;
+      if (!country) {
+        log(`Country not found in session for user ${ctx.from.id}.`);
+        return ctx.reply(ctx.i18n.t("country_not_selected"));
+      }
+  
+      const stock = await Stock.findOne({ where: { country } });
+  
+      if (!stock) {
+        log(`Stock not found for country ${country}.`);
+        return ctx.reply(ctx.i18n.t("stock_not_found", { country }));
+      }
+  
+      const keys = await Key.findAll({
+        where: {
+          stock_id: stock.id,
+          used: false,
+        },
+      });
+  
+      const sixDigitCounts = keys.reduce((acc, key) => {
+        const sixDigit = key.number.slice(0, 6);
+        if (!acc[sixDigit]) {
+          acc[sixDigit] = 0;
+        }
+        acc[sixDigit]++;
+        return acc;
+      }, {});
+  
+      const sixDigitList = Object.keys(sixDigitCounts).map(sixDigit => ({
+        six_digit: sixDigit,
+        quantity: sixDigitCounts[sixDigit]
+      }));
+  
+      // If there are more than 250 keys, generate a CSV file
+      if (sixDigitList.length > 250) {
+        const json2csvParser = new Parser();
+        const csv = json2csvParser.parse(sixDigitList);
+        
+        await ctx.replyWithDocument({
+          source: Buffer.from(csv),
+          filename: `six_digit_list_${country}.csv`
+        });
+      } else {
+        // Split the list into chunks of 50 items per chunk
+        const chunkSize = 50;
+        for (let i = 0; i < sixDigitList.length; i += chunkSize) {
+          const chunk = sixDigitList.slice(i, i + chunkSize).map(item => `${item.six_digit} * ${item.quantity}`).join('\n');
+          const responseMessage = `
+          ${ctx.i18n.t('six_digit_list_title', { country })}
+          ${chunk}
+          `;
+          await ctx.reply(responseMessage);
+        }
+      }
+    } catch (error) {
+      log.error(`Error in generateSixDigitList for user ${ctx.from.id}:`, error);
+      ctx.reply(ctx.i18n.t("error_occurred"));
+    }
+  }  
 };
 
 export default buyingController;

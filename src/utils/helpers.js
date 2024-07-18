@@ -63,17 +63,17 @@ export const sendDepositDetails = async (ctx, deposit, ongoing = false) => {
   );
 };
 
-export const checkPaymentDifference = (paymentDetails, deposit) => {
-  console.log(deposit)
-  console.log(paymentDetails)
-  const payAmount = paymentDetails.outcome_amount;
-  const depositAmount = deposit.amount;
+// export const checkPaymentDifference = (paymentDetails, deposit) => {
+//   console.log(deposit)
+//   console.log(paymentDetails)
+//   const payAmount = paymentDetails.outcome_amount;
+//   const depositAmount = deposit.amount;
 
-  const difference = Math.abs(depositAmount - payAmount);
-  const percentageDifference = (difference / depositAmount) * 100;
+//   const difference = Math.abs(depositAmount - payAmount);
+//   const percentageDifference = (difference / depositAmount) * 100;
 
-  if (percentageDifference > 10) {
-    log(`Deposit ID: ${deposit.id} - Deposit Amount: ${depositAmount}, Paid Amount: ${payAmount}, Difference: ${difference}, Percentage Difference: ${percentageDifference.toFixed(2)}%`);
-    throw new Error('Payment amount differs from deposit amount by more than 1%');
-  }
-}
+//   if (percentageDifference > 10) {
+//     log(`Deposit ID: ${deposit.id} - Deposit Amount: ${depositAmount}, Paid Amount: ${payAmount}, Difference: ${difference}, Percentage Difference: ${percentageDifference.toFixed(2)}%`);
+//     throw new Error('Payment amount differs from deposit amount by more than 1%');
+//   }
+// }

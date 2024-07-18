@@ -4,7 +4,7 @@ import nowPaymentsApi from "../config/nowPaymentsApi.js";
 import log from "../utils/logger.js";
 import moment from "moment";
 import generateQRCode from "./qrCode.js";
-console.log(process.env.APP_URL)
+
 const depositService = {
   createDeposit: async (ctx, userId, amount, currency) => {
     try {
@@ -13,8 +13,8 @@ const depositService = {
         price_currency: "usd",
         pay_currency: currency,
         order_id: `order_${userId}_${Date.now()}`,
-        order_description: "Deposit for user",
-        ipn_callback_url: `${process.env.APP_URL}/payment-notification`,
+        order_description: `Deposit for user: ${userId}`,
+        // ipn_callback_url: "https://smiling-muskrat-clean.ngrok-free.app/payment-notification",
       };
 
       const invoiceResponse = await nowPaymentsApi.post(
@@ -41,7 +41,7 @@ const depositService = {
       const qrCodeUrl = await generateQRCode(
         invoicePaymentResponse.data.pay_address
       );
-      console.log(invoiceResponse.data)
+      console.log(invoicePaymentResponse.data, 's')
       const deposit = await Deposit.create({
         user_id: userId,
         amount,

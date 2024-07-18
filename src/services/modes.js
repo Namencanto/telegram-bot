@@ -3,7 +3,7 @@ import log from '../utils/logger.js';
 import Sequelize from 'sequelize';
 import moment from 'moment';
 
-const handlePrefixMode = async (ctx, country, prefix) => {
+export const handlePrefixMode = async (ctx, country, prefix) => {
   try {
     const stock = await Stock.findOne({ where: { country } });
     if (!stock) {
@@ -42,4 +42,43 @@ const handlePrefixMode = async (ctx, country, prefix) => {
   }
 };
 
-export default handlePrefixMode;
+export const generateSixDigitList = async (ctx) => {
+  try {
+    const country = ctx.match[0].split("_")[2];
+    const stock = await Stock.findOne({ where: { country } });
+
+    if (!stock) {
+      log(`Stock not found for country ${country}.`);
+      return ctx.reply(ctx.i18n.t("stock_not_found", { country }));
+    }
+
+    const keys = await Key.findAll({
+      where: {
+        stock_id: stock.id,
+        used: false,
+      },
+    });
+
+    const sixDigitCounts = keys.reduce((acc, key) => {
+      const sixDigit = key.code.slice(0, 6);
+      if (!acc[sixDigit]) {
+        acc[sixDigit] = 0;
+      }
+      acc[sixDigit]++;
+      return acc;
+    }, {});
+
+    const sixDigitList = Object.keys(sixDigitCounts)
+      .map(sixDigit => `${sixDigit} * ${sixDigitCounts[sixDigit]}`)
+      .join('\n');
+
+    const responseMessage = `
+      ${ctx.i18n.t('six_digit_list_title', { country })}\n\n${sixDigitList}
+    `;
+
+    ctx.reply(responseMessage);
+  } catch (error) {
+    log.error(`Error in generateSixDigitList for user ${ctx.from.id}:`, error);
+    ctx.reply(ctx.i18n.t("error_occurred"));
+  }
+};

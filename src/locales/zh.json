@@ -1,10 +1,10 @@
 {
   "welcome": "欢迎！选择一个选项：",
-  "buy_country": "按国家购买",
+  "buy_country": "🗺️ 按国家购买",
   "buy_bulk": "批量购买",
-  "query_stock": "查询库存",
-  "deposit_funds": "存款",
-  "account_info": "帐户信息",
+  "query_stock": "📊 查询库存",
+  "deposit_funds": "💰 存款",
+  "account_info": "📜 帐户信息",
   "account_details": "您的 ID: {{id}}\n用户名: {{username}}\n注册日期: {{registrationDate}}\n\n总购买数量: {{totalPurchaseQuantity}}\n\n总购买金额: {{totalPurchaseAmount}} USD\n\n余额: {{balance}} USD",
   "not_authorized": "您无权执行此操作。",
   "choose_country": "选择一个国家：",
@@ -49,5 +49,12 @@
   "ongoing_deposit_message": "您有一个正在进行的存款。在创建新存款之前，您需要取消或完成它。",
   "amount_minimal_error": "金额太低。最低金额为${{minAmount}}。请输入更高的金额。",
   "enter_amount_again": "请重新输入存款金额：",
-  "choose_currency": "选择一种货币："
+  "choose_currency": "选择一种货币：",
+  "country_not_selected": "未选择国家。",
+  "stock_not_found": "未找到国家 {{country}} 的库存。",
+  "six_digit_list_title": "国家 {{country}} 的 6 位代码, 数量",
+  "six_digit_list": "6位代码列表",
+    "provide_message_to_broadcast": "请提供要广播的信息。",
+  "message_broadcasted": "消息已广播给所有用户。",
+  "too_many_requests": "请求过多，请稍等片刻后再试。"
 }
